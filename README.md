@@ -254,4 +254,4 @@ walkthough](https://nbdev.fast.ai/tutorials/tutorial.html).
 You can explore the nbdev features: github pages workflow integration,
 pypi integration, etc.
 
-Enjoy coding with nbdev !
+Now enjoy coding with nbdev !
