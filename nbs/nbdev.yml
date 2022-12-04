@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "tutorial_ubuntu_nbdev"
+  site-url: "https://chrphb.github.io/tutorial_ubuntu_nbdev"
+  description: "A tutorial on how to set-up a new clean Ubuntu nbdev environment"
+  repo-branch: main
+  repo-url: "https://github.com/chrphb/tutorial_ubuntu_nbdev"
