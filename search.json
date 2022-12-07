@@ -1,0 +1,79 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "",
+    "text": "In this tutorial, you will install your new clean development environment for python, Jupyter notebook and nbdev.\nYou will use powerful features such as: linux chroot, python virtual environment, Jupyter notebook and nbdev."
+  },
+  {
+    "objectID": "index.html#prerequisites",
+    "href": "index.html#prerequisites",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "Prerequisites",
+    "text": "Prerequisites\nYou need a computer running the latest version of Ubuntu. This tutorial is written for Ubuntu version 22, named Jammy. Although it is recommended to use the same version, most of the tutorial can be followed with other versions of Ubuntu.\nMake sure to install: debootstrap, schroot.\nYou can install them with:\nsudo apt install debootstrap\nsudo apt install schroot\nYou need a local Linux user - in this tutorial, mine is called chris.\nAnd you also need a github account, and an authentication token already configured."
+  },
+  {
+    "objectID": "index.html#create-a-chroot-environment",
+    "href": "index.html#create-a-chroot-environment",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "Create a chroot environment",
+    "text": "Create a chroot environment\n\nInitiate the chroot with debootstrap\nYou will first create a clean chroot environment. A chroot is an isolated linux environment where packages are installed independently of the main operating system packages. Whatever is installed in the chroot will not contaminate your main operating system.\n\n\n\n\n\n\nNote\n\n\n\nIf you want to know more about chroot, you can read the wikipedia article.\n\n\nsudo debootstrap jammy nbdev\n\n\nMount bind OS folder\nBind mount dev, proc and sys in the chroot env:\nsudo mount --rbind /dev ~/mychroots/nbdev/dev\nsudo mount --rbind /proc ~/mychroots/nbdev/proc\nsudo mount --rbind /sys ~/mychroots/nbdev/sys\n\n\nCopy apt source configuration\nCopy the sources apt repo to the chroot env:\nsudo cp /etc/apt/sources.list ~/mychroots/nbdev/etc/apt/sources.list\nYou will be able to install any package in the chroot environment from the repository list.\n\n\nEdit schroot configuration\nEdit schroot configuration as follows for the new chroot environment:\nsudo vi /etc/schroot/schroot.conf\n[nbdev]\ndescription=nbdev - Jammy\ndirectory=/home/chris/mychroots/nbdev\nusers=chris\nroot-groups=root\n\n\nConfigure the user in the chroot environment\nCreate the first user (I recommend to use the same user as the one doing the schroot in the mother environment) and add it to sudoers. For convenience, I configure it to run without password when doing sudo:\nadduser chris\nusermod -aG sudo chris\nvisudo\nAdd the following line:\n      chris ALL=(ALL) NOPASSWD:ALL\nNow you are done with the chroot environment !\nYou can simply enter the chroot environment with your user as follows:\nschroot -c nbdev --directory /home/chris\nTo exit the environment, type simply:\nexit"
+  },
+  {
+    "objectID": "index.html#packages-installation",
+    "href": "index.html#packages-installation",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "Packages Installation",
+    "text": "Packages Installation\n\nUpgrade\nEnter again the chroot environment.\nYou start by upgrading your local packages with the latest updates:\nsudo apt update\nsudo apt upgrade\n\n\nPackages installation\nThen, you install the new packages needed for your environment:\nsudo apt install python3-pip python3-venv git\n\n\nInstall github client\nTo install the Github client, you copy and paste the following command:\ntype -p curl >/dev/null || sudo apt install curl -y\ncurl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \\\n&& sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \\\n&& echo \"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \\\n&& sudo apt update \\\n&& sudo apt install gh -y"
+  },
+  {
+    "objectID": "index.html#configure-git-and-github",
+    "href": "index.html#configure-git-and-github",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "Configure git and github",
+    "text": "Configure git and github\n\nGit configuration\nFor git, you configure your user name and email - so that your commit messages include the right author:\ngit config --global user.email YOUR_EMAIL\ngit config --global user.name YOUR_NAME\n\n\nGithub configuration\nFor Github, you need to register your authentication token.\ngh auth login\nFollow the prompts, select Github.com and as method for authentication: with authentication token.\nNote that your authentication token will expire after some time, and you will need to configure again your github access from time to time."
+  },
+  {
+    "objectID": "index.html#install-your-python-virtual-environment",
+    "href": "index.html#install-your-python-virtual-environment",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "Install your Python virtual environment",
+    "text": "Install your Python virtual environment\nStill inside the chroot environment, cd to your home directory, and build a python virtual environment. Then install jupyter, jupyter_contrib_nbextensions, jupyterthemes, twine and nbdev\ncd\nmkdir pyenv\ncd pyenv\npython3 -m venv nbenv\nsource nbenv/bin/activate\npython3 -m pip install jupyter jupyter_contrib_nbextensions jupyterthemes nbdev twine\n\n\n\n\n\n\nNote\n\n\n\ntwine will be used to publish packages to PyPi."
+  },
+  {
+    "objectID": "index.html#configure-jupyter-notebook",
+    "href": "index.html#configure-jupyter-notebook",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "Configure Jupyter notebook",
+    "text": "Configure Jupyter notebook\nYou then enable 2 useful jupyter notebook extensions:\njupyter nbextension enable collapsible_headings/main\njupyter nbextension enable toc2/main\nThese extensions bring: collapsible headings, and the display of Table of Content.\nAnd you enable a Jupyter dark theme - I like cheterish:\njt -t chesterish\n\n\n\n\n\n\nNote\n\n\n\nIn this set-up, the top Navigate menu from the TOC2 extension seems to remain blank. But the left Table of Content works fine - which is still very useful."
+  },
+  {
+    "objectID": "index.html#your-first-nbdev-project",
+    "href": "index.html#your-first-nbdev-project",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "Your first nbdev project",
+    "text": "Your first nbdev project\n\nInitiate your github repository\nYou create a new github repository. Once this is done, copy its HTTPS clone url.\nClone your repository in your development environment:\ngit clone YOUR_REPOSITORY_HTTPS_URL\n\n\nConfigure the nbdev environment\nNow you can set-up the initial nbdev environment with:\nnbdev_new\nnbdev_install_hooks\ngit add .\ngit commit -m 'Creation'\ngit push\n\n\nOpen the Jupyter notebook\nWithin your project folder structure, you can start Jupyter and start working with the notebook in the nbs folder:\njupyter notebook nbs/"
+  },
+  {
+    "objectID": "index.html#pypi-configuration",
+    "href": "index.html#pypi-configuration",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "PyPi Configuration",
+    "text": "PyPi Configuration\nTo be able to publish your packages to PyPi, register at pypi, and then create a file called ~/.pypirc with your login details. It should have these lines:\n[pypi]\nusername = your_pypi_username\npassword = your_pypi_password"
+  },
+  {
+    "objectID": "index.html#congratulations",
+    "href": "index.html#congratulations",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "Congratulations",
+    "text": "Congratulations\nCongratulations you have a working nbdev environment in a completely isolated environment with chroot and python virtual environment ! You can now enjoy the power of Jupyter notebooks and nbdev library."
+  },
+  {
+    "objectID": "index.html#next-steps",
+    "href": "index.html#next-steps",
+    "title": "Tutorial: How to set-up your new nbdev development environment in Ubuntu",
+    "section": "Next Steps",
+    "text": "Next Steps\nYou can now continue with the nbdev walkthough.\nYou can explore the nbdev features: github pages workflow integration, pypi integration, etc.\nEnjoy coding with nbdev !\nIf you enjoyed this tutorial, please follow me here."
+  }
+]

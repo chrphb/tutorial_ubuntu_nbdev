@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="A tutorial on how to set-up in Ubuntu a new nbdev environment with chroot and python virtual environment.">
+
+<title>tutorial_ubuntu_nbdev - Tutorial: How to set-up your new nbdev development environment in Ubuntu</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="tutorial_ubuntu_nbdev - Tutorial: How to set-up your new nbdev development environment in Ubuntu">
+<meta property="og:description" content="A tutorial on how to set-up in Ubuntu a new nbdev environment with chroot and python virtual environment.">
+<meta property="og:site-name" content="tutorial_ubuntu_nbdev">
+<meta name="twitter:title" content="tutorial_ubuntu_nbdev - Tutorial: How to set-up your new nbdev development environment in Ubuntu">
+<meta name="twitter:description" content="A tutorial on how to set-up in Ubuntu a new nbdev environment with chroot and python virtual environment.">
+<meta name="twitter:site" content="@chrphb">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">tutorial_ubuntu_nbdev</span>
+    </a>
+  </div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Tutorial: How to set-up your new nbdev development environment in Ubuntu</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+        <div class="sidebar-tools-main">
+    <a href="https://twitter.com/chrphb" title="" class="sidebar-tool px-1"><i class="bi bi-twitter"></i></a>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">Tutorial: How to set-up your new nbdev development environment in Ubuntu</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link active" data-scroll-target="#prerequisites">Prerequisites</a></li>
+  <li><a href="#create-a-chroot-environment" id="toc-create-a-chroot-environment" class="nav-link" data-scroll-target="#create-a-chroot-environment">Create a chroot environment</a>
+  <ul class="collapse">
+  <li><a href="#initiate-the-chroot-with-debootstrap" id="toc-initiate-the-chroot-with-debootstrap" class="nav-link" data-scroll-target="#initiate-the-chroot-with-debootstrap">Initiate the chroot with debootstrap</a></li>
+  <li><a href="#mount-bind-os-folder" id="toc-mount-bind-os-folder" class="nav-link" data-scroll-target="#mount-bind-os-folder">Mount bind OS folder</a></li>
+  <li><a href="#copy-apt-source-configuration" id="toc-copy-apt-source-configuration" class="nav-link" data-scroll-target="#copy-apt-source-configuration">Copy apt source configuration</a></li>
+  <li><a href="#edit-schroot-configuration" id="toc-edit-schroot-configuration" class="nav-link" data-scroll-target="#edit-schroot-configuration">Edit schroot configuration</a></li>
+  <li><a href="#configure-the-user-in-the-chroot-environment" id="toc-configure-the-user-in-the-chroot-environment" class="nav-link" data-scroll-target="#configure-the-user-in-the-chroot-environment">Configure the user in the chroot environment</a></li>
+  </ul></li>
+  <li><a href="#packages-installation" id="toc-packages-installation" class="nav-link" data-scroll-target="#packages-installation">Packages Installation</a>
+  <ul class="collapse">
+  <li><a href="#upgrade" id="toc-upgrade" class="nav-link" data-scroll-target="#upgrade">Upgrade</a></li>
+  <li><a href="#packages-installation-1" id="toc-packages-installation-1" class="nav-link" data-scroll-target="#packages-installation-1">Packages installation</a></li>
+  <li><a href="#install-github-client" id="toc-install-github-client" class="nav-link" data-scroll-target="#install-github-client">Install github client</a></li>
+  </ul></li>
+  <li><a href="#configure-git-and-github" id="toc-configure-git-and-github" class="nav-link" data-scroll-target="#configure-git-and-github">Configure git and github</a>
+  <ul class="collapse">
+  <li><a href="#git-configuration" id="toc-git-configuration" class="nav-link" data-scroll-target="#git-configuration">Git configuration</a></li>
+  <li><a href="#github-configuration" id="toc-github-configuration" class="nav-link" data-scroll-target="#github-configuration">Github configuration</a></li>
+  </ul></li>
+  <li><a href="#install-your-python-virtual-environment" id="toc-install-your-python-virtual-environment" class="nav-link" data-scroll-target="#install-your-python-virtual-environment">Install your Python virtual environment</a></li>
+  <li><a href="#configure-jupyter-notebook" id="toc-configure-jupyter-notebook" class="nav-link" data-scroll-target="#configure-jupyter-notebook">Configure Jupyter notebook</a></li>
+  <li><a href="#your-first-nbdev-project" id="toc-your-first-nbdev-project" class="nav-link" data-scroll-target="#your-first-nbdev-project">Your first nbdev project</a>
+  <ul class="collapse">
+  <li><a href="#initiate-your-github-repository" id="toc-initiate-your-github-repository" class="nav-link" data-scroll-target="#initiate-your-github-repository">Initiate your github repository</a></li>
+  <li><a href="#configure-the-nbdev-environment" id="toc-configure-the-nbdev-environment" class="nav-link" data-scroll-target="#configure-the-nbdev-environment">Configure the nbdev environment</a></li>
+  <li><a href="#open-the-jupyter-notebook" id="toc-open-the-jupyter-notebook" class="nav-link" data-scroll-target="#open-the-jupyter-notebook">Open the Jupyter notebook</a></li>
+  </ul></li>
+  <li><a href="#pypi-configuration" id="toc-pypi-configuration" class="nav-link" data-scroll-target="#pypi-configuration">PyPi Configuration</a></li>
+  <li><a href="#congratulations" id="toc-congratulations" class="nav-link" data-scroll-target="#congratulations">Congratulations</a></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps">Next Steps</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/chrphb/tutorial_ubuntu_nbdev/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Tutorial: How to set-up your new nbdev development environment in Ubuntu</h1>
+</div>
+
+<div>
+  <div class="description">
+    A tutorial on how to set-up in Ubuntu a new nbdev environment with chroot and python virtual environment.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>In this tutorial, you will install your new clean development environment for python, Jupyter notebook and <a href="https://nbdev.fast.ai/">nbdev</a>.</p>
+<p>You will use powerful features such as: linux chroot, python virtual environment, Jupyter notebook and nbdev.</p>
+<section id="prerequisites" class="level2">
+<h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
+<p>You need a computer running the latest version of Ubuntu. This tutorial is written for Ubuntu version 22, named <em>Jammy</em>. Although it is recommended to use the same version, most of the tutorial can be followed with other versions of Ubuntu.</p>
+<p>Make sure to install: debootstrap, schroot.</p>
+<p>You can install them with:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install debootstrap</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install schroot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You need a local Linux user - in this tutorial, mine is called <code>chris</code>.</p>
+<p>And you also need a github account, and an <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token">authentication token</a> already configured.</p>
+</section>
+<section id="create-a-chroot-environment" class="level2">
+<h2 class="anchored" data-anchor-id="create-a-chroot-environment">Create a chroot environment</h2>
+<section id="initiate-the-chroot-with-debootstrap" class="level3">
+<h3 class="anchored" data-anchor-id="initiate-the-chroot-with-debootstrap">Initiate the chroot with debootstrap</h3>
+<p>You will first create a clean chroot environment. A chroot is an isolated linux environment where packages are installed independently of the main operating system packages. Whatever is installed in the chroot will not contaminate your main operating system.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you want to know more about chroot, you can read the <a href="https://en.wikipedia.org/wiki/Chroot">wikipedia article</a>.</p>
+</div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> debootstrap jammy nbdev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="mount-bind-os-folder" class="level3">
+<h3 class="anchored" data-anchor-id="mount-bind-os-folder">Mount bind OS folder</h3>
+<p>Bind mount dev, proc and sys in the chroot env:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mount <span class="at">--rbind</span> /dev ~/mychroots/nbdev/dev</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mount <span class="at">--rbind</span> /proc ~/mychroots/nbdev/proc</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mount <span class="at">--rbind</span> /sys ~/mychroots/nbdev/sys</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="copy-apt-source-configuration" class="level3">
+<h3 class="anchored" data-anchor-id="copy-apt-source-configuration">Copy apt source configuration</h3>
+<p>Copy the sources apt repo to the chroot env:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cp /etc/apt/sources.list ~/mychroots/nbdev/etc/apt/sources.list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You will be able to install any package in the chroot environment from the repository list.</p>
+</section>
+<section id="edit-schroot-configuration" class="level3">
+<h3 class="anchored" data-anchor-id="edit-schroot-configuration">Edit schroot configuration</h3>
+<p>Edit schroot configuration as follows for the new chroot environment:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> vi /etc/schroot/schroot.conf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>[nbdev]
+description=nbdev - Jammy
+directory=/home/chris/mychroots/nbdev
+users=chris
+root-groups=root</code></pre>
+</section>
+<section id="configure-the-user-in-the-chroot-environment" class="level3">
+<h3 class="anchored" data-anchor-id="configure-the-user-in-the-chroot-environment">Configure the user in the chroot environment</h3>
+<p>Create the first user (I recommend to use the same user as the one doing the schroot in the mother environment) and add it to sudoers. For convenience, I configure it to run without password when doing sudo:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">adduser</span> chris</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">usermod</span> <span class="at">-aG</span> sudo chris</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">visudo</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Add the following line:</p>
+<pre><code>      chris ALL=(ALL) NOPASSWD:ALL</code></pre>
+<p>Now you are done with the chroot environment !</p>
+<p>You can simply enter the chroot environment with your user as follows:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">schroot</span> <span class="at">-c</span> nbdev <span class="at">--directory</span> /home/chris</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To exit the environment, type simply:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="packages-installation" class="level2">
+<h2 class="anchored" data-anchor-id="packages-installation">Packages Installation</h2>
+<section id="upgrade" class="level3">
+<h3 class="anchored" data-anchor-id="upgrade">Upgrade</h3>
+<p>Enter again the chroot environment.</p>
+<p>You start by upgrading your local packages with the latest updates:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt upgrade</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="packages-installation-1" class="level3">
+<h3 class="anchored" data-anchor-id="packages-installation-1">Packages installation</h3>
+<p>Then, you install the new packages needed for your environment:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install python3-pip python3-venv git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="install-github-client" class="level3">
+<h3 class="anchored" data-anchor-id="install-github-client">Install github client</h3>
+<p>To install the Github client, you copy and paste the following command:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span> <span class="at">-p</span> curl <span class="op">&gt;</span>/dev/null <span class="kw">||</span> <span class="fu">sudo</span> apt install curl <span class="at">-y</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fsSL</span> https://cli.github.com/packages/githubcli-archive-keyring.gpg <span class="kw">|</span> <span class="fu">sudo</span> dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg <span class="dt">\</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg <span class="dt">\</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"deb [arch=</span><span class="va">$(</span><span class="ex">dpkg</span> <span class="at">--print-architecture</span><span class="va">)</span><span class="st"> signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main"</span> <span class="kw">|</span> <span class="fu">sudo</span> tee /etc/apt/sources.list.d/github-cli.list <span class="op">&gt;</span> /dev/null <span class="dt">\</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> apt update <span class="dt">\</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> apt install gh <span class="at">-y</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="configure-git-and-github" class="level2">
+<h2 class="anchored" data-anchor-id="configure-git-and-github">Configure git and github</h2>
+<section id="git-configuration" class="level3">
+<h3 class="anchored" data-anchor-id="git-configuration">Git configuration</h3>
+<p>For git, you configure your user name and email - so that your commit messages include the right author:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email YOUR_EMAIL</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name YOUR_NAME</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="github-configuration" class="level3">
+<h3 class="anchored" data-anchor-id="github-configuration">Github configuration</h3>
+<p>For Github, you need to register your authentication token.</p>
+<pre><code>gh auth login</code></pre>
+<p>Follow the prompts, select <code>Github.com</code> and as method for authentication: <code>with authentication token</code>.</p>
+<p>Note that your authentication token will expire after some time, and you will need to configure again your github access from time to time.</p>
+</section>
+</section>
+<section id="install-your-python-virtual-environment" class="level2">
+<h2 class="anchored" data-anchor-id="install-your-python-virtual-environment">Install your Python virtual environment</h2>
+<p>Still inside the chroot environment, cd to your home directory, and build a python virtual environment. Then install <code>jupyter, jupyter_contrib_nbextensions, jupyterthemes, twine</code> and <code>nbdev</code></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> pyenv</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> pyenv</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> venv nbenv</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> nbenv/bin/activate</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> pip install jupyter jupyter_contrib_nbextensions jupyterthemes nbdev twine</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>twine</code> will be used to publish packages to PyPi.</p>
+</div>
+</div>
+</section>
+<section id="configure-jupyter-notebook" class="level2">
+<h2 class="anchored" data-anchor-id="configure-jupyter-notebook">Configure Jupyter notebook</h2>
+<p>You then enable 2 useful jupyter notebook extensions:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">jupyter</span> nbextension enable collapsible_headings/main</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">jupyter</span> nbextension enable toc2/main</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>These extensions bring: collapsible headings, and the display of Table of Content.</p>
+<p>And you enable a Jupyter dark theme - I like <code>cheterish</code>:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">jt</span> <span class="at">-t</span> chesterish</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this set-up, the top <em>Navigate</em> menu from the TOC2 extension seems to remain blank. But the left Table of Content works fine - which is still very useful.</p>
+</div>
+</div>
+</section>
+<section id="your-first-nbdev-project" class="level2">
+<h2 class="anchored" data-anchor-id="your-first-nbdev-project">Your first nbdev project</h2>
+<section id="initiate-your-github-repository" class="level3">
+<h3 class="anchored" data-anchor-id="initiate-your-github-repository">Initiate your github repository</h3>
+<p>You create a new github repository. Once this is done, copy its HTTPS clone url.</p>
+<p>Clone your repository in your development environment:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone YOUR_REPOSITORY_HTTPS_URL</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="configure-the-nbdev-environment" class="level3">
+<h3 class="anchored" data-anchor-id="configure-the-nbdev-environment">Configure the nbdev environment</h3>
+<p>Now you can set-up the initial nbdev environment with:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">nbdev_new</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">nbdev_install_hooks</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">'Creation'</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="open-the-jupyter-notebook" class="level3">
+<h3 class="anchored" data-anchor-id="open-the-jupyter-notebook">Open the Jupyter notebook</h3>
+<p>Within your project folder structure, you can start Jupyter and start working with the notebook in the <code>nbs</code> folder:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">jupyter</span> notebook nbs/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="pypi-configuration" class="level2">
+<h2 class="anchored" data-anchor-id="pypi-configuration">PyPi Configuration</h2>
+<p>To be able to publish your packages to PyPi, register at pypi, and then create a file called ~/.pypirc with your login details. It should have these lines:</p>
+<pre><code>[pypi]
+username = your_pypi_username
+password = your_pypi_password</code></pre>
+</section>
+<section id="congratulations" class="level2">
+<h2 class="anchored" data-anchor-id="congratulations">Congratulations</h2>
+<p>Congratulations you have a working nbdev environment in a completely isolated environment with chroot and python virtual environment ! You can now enjoy the power of Jupyter notebooks and nbdev library.</p>
+</section>
+<section id="next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="next-steps">Next Steps</h2>
+<p>You can now continue with the <a href="https://nbdev.fast.ai/tutorials/tutorial.html">nbdev walkthough</a>.</p>
+<p>You can explore the nbdev features: github pages workflow integration, pypi integration, etc.</p>
+<p>Enjoy coding with nbdev !</p>
+<p>If you enjoyed this tutorial, please <a href="http://twitter.com/chrphb">follow me here</a>.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
