@@ -182,7 +182,8 @@ will need to configure again your github access from time to time.
 
 Still inside the chroot environment, cd to your home directory, and
 build a python virtual environment. Then install
-`jupyter, jupyter_contrib_nbextensions, jupyterthemes` and `nbdev`
+`jupyter, jupyter_contrib_nbextensions, jupyterthemes, twine` and
+`nbdev`
 
 ``` sh
 cd
@@ -190,8 +191,16 @@ mkdir pyenv
 cd pyenv
 python3 -m venv nbenv
 source nbenv/bin/activate
-python3 -m pip install jupyter jupyter_contrib_nbextensions jupyterthemes nbdev
+python3 -m pip install jupyter jupyter_contrib_nbextensions jupyterthemes nbdev twine
 ```
+
+<div>
+
+> **Note**
+>
+> `twine` will be used to publish packages to PyPi.
+
+</div>
 
 ## Configure Jupyter notebook
 
@@ -255,6 +264,16 @@ working with the notebook in the `nbs` folder:
 jupyter notebook nbs/
 ```
 
+## PyPi Configuration
+
+To be able to publish your packages to PyPi, register at pypi, and then
+create a file called \~/.pypirc with your login details. It should have
+these lines:
+
+    [pypi]
+    username = your_pypi_username
+    password = your_pypi_password
+
 ## Congratulations
 
 Congratulations you have a working nbdev environment in a completely
@@ -272,5 +291,4 @@ pypi integration, etc.
 Enjoy coding with nbdev !
 
 If you enjoyed this tutorial, please [follow me
-here](http://twitter.com/chrphb), and [read more
-here](https://blog.chrphb.com).
+here](http://twitter.com/chrphb).
