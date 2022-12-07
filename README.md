@@ -86,7 +86,7 @@ sudo vi /etc/schroot/schroot.conf
 
     [nbdev]
     description=nbdev - Jammy
-    directory=/home/chris/mychroots/nbdev1
+    directory=/home/chris/mychroots/nbdev
     users=chris
     root-groups=root
 
@@ -124,6 +124,8 @@ exit
 
 ### Upgrade
 
+Enter again the chroot environment.
+
 You start by upgrading your local packages with the latest updates:
 
 ``` sh
@@ -141,7 +143,7 @@ sudo apt install python3-pip python3-venv git
 
 ### Install github client
 
-You have to copy and paste the following command:
+To install the Github client, you copy and paste the following command:
 
 ``` sh
 type -p curl >/dev/null || sudo apt install curl -y
@@ -200,11 +202,24 @@ jupyter nbextension enable collapsible_headings/main
 jupyter nbextension enable toc2/main
 ```
 
+These extensions bring: collapsible headings, and the display of Table
+of Content.
+
 And you enable a Jupyter dark theme - I like `cheterish`:
 
 ``` sh
 jt -t chesterish
 ```
+
+<div>
+
+> **Note**
+>
+> In this set-up, the top *Navigate* menu from the TOC2 extension seems
+> to remain blank. But the left Table of Content works fine - which is
+> still very useful.
+
+</div>
 
 ## Your first nbdev project
 
@@ -254,7 +269,7 @@ walkthough](https://nbdev.fast.ai/tutorials/tutorial.html).
 You can explore the nbdev features: github pages workflow integration,
 pypi integration, etc.
 
-Now enjoy coding with nbdev !
+Enjoy coding with nbdev !
 
 If you enjoyed this tutorial, please [follow me
 here](http://twitter.com/chrphb), and [read more
